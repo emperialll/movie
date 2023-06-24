@@ -1,7 +1,7 @@
 from storage_json import StorageJson
 from storage_csv import StorageCsv
 from movie_app import MovieApp
-import sys
+import argparse
 
 
 # The main function which is being executed upon running the program
@@ -11,18 +11,29 @@ def main() -> None:
     his/her preferred function and thereafter calls the respective function
     :return: None
     """
-    # storage = StorageJson('movies.json')
-    # movie_app = MovieApp(storage)
-    # movie_app.run()
-    arg = sys.argv[1]
-    if 'json' in arg:
-        storage = StorageJson(arg)
+    # Create an instance of ArgumentParser
+    parser = argparse.ArgumentParser(description='Movie App')
+
+    # Define the command-line argument
+    parser.add_argument('file_path',
+                        help='Path to the storage file (JSON or CSV)')
+
+    # Parse the command-line arguments
+    args = parser.parse_args()
+
+    # Access the value of the parsed argument
+    file_path = args.file_path
+
+    if file_path.endswith('.json'):
+        storage = StorageJson(file_path)
         movie_app = MovieApp(storage)
         movie_app.run()
-    elif 'csv' in arg:
-        storage = StorageCsv(arg)
+    elif file_path.endswith('.csv'):
+        storage = StorageCsv(file_path)
         movie_app = MovieApp(storage)
         movie_app.run()
+    else:
+        print('Invalid file type. Only JSON or CSV files are supported.')
 
 
 if __name__ == "__main__":

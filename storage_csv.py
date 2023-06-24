@@ -1,5 +1,7 @@
 import csv
 import requests
+import statistics
+import random
 from istorage import IStorage
 import os
 
@@ -9,6 +11,7 @@ API: str = 'http://www.omdbapi.com/?apikey=6f0c3bf6&t='
 IMDB: str = 'https://www.imdb.com/title/'
 # The API to get country name from country code
 COUNTRY_API: str = "https://restcountries.com/v3.1/name/"
+FLAG_API: str = "https://flagsapi.com/"
 
 
 class StorageCsv(IStorage):
@@ -171,3 +174,138 @@ class StorageCsv(IStorage):
         print(
             f'\nError: The movie "{title}" does not exist in the movie list.'
         )
+
+    def stats(self):
+        """
+        This function prints the statistical data of the movies in the
+        movie list. It includes the best movie, worse movie, average rating
+        and median rate
+        """
+        value_list: list = []
+        best_movie: list = []
+        worst_movie: list = []
+        movies: list = self.list_movies()
+        for movie in movies:
+            value_list.append(float(movie['rating']))
+        highest_rate: float = max(value_list)
+        lowest_rate: float = min(value_list)
+        for movie in movies:
+            if float(movie['rating']) == highest_rate:
+                best_movie.append(movie['title'])
+            elif float(movie['rating']) == lowest_rate:
+                worst_movie.append(movie['title'])
+
+        average_rating: float = statistics.mean(value_list)
+        median_rating: float = statistics.median(value_list)
+        print(f'The average movie rating is {average_rating}.')
+        print(f'The median of movie rating is {median_rating}.')
+        if len(best_movie) == 1:
+            print(f'The best movie is: {best_movie[0]}.')
+        else:
+            # If multiple movies found with same rating
+            print(f'The best movies are: {", ".join(best_movie)}')
+
+        if len(worst_movie) == 1:
+            print(f'The worst movie is: {worst_movie[0]}.')
+        else:
+            # If multiple movies found with same rating
+            print(f'The worst movies are: {", ".join(worst_movie)}')
+
+    # This function allows user to pick a random movie
+    def random_movie(self) -> None:
+        """
+        Upon executing this function a random movie will be picked from movie
+        list and gets printed in terminal
+        """
+        movies: list = self.list_movies()
+        movie: dict = random.choice(movies)
+        print(f'Your random movie is "{movie["title"]}" with '
+              f'rating {movie["rating"]}')
+
+    # This function allows user to search for a movie by using a keyword
+    def search_movie(self, title):
+        """
+        This function gets a movie keyword from user and prints all the movies
+        with the given keyword
+        :param title: str
+        :return: None
+        """
+        movies: list = self.list_movies()
+        for movie in movies:
+            if title.lower() in movie['title'].lower():
+                print(f'{movie["title"]}, {movie["rating"]}')
+
+    # This function sorts the movie list  with descending ratings
+    def movies_sorted_by_rating(self):
+        """
+        Upon executing this function, the movies in movie list will be sorted
+        from high to low and prints on terminal
+        :return: None
+        """
+        movies: list = self.list_movies()
+        sorted_movies: list = sorted(movies, key=lambda item: item['rating'],
+                                     reverse=True)
+        print(f'{len(sorted_movies)} movies in total\n')
+        for movie in sorted_movies:
+            print(f'{movie["title"]}, {movie["rating"]}')
+
+    # This function generates the html code for movie thumbnail
+    def movie_thumbnail(self):
+        """
+        This function calls the API to get the full country name from country
+        code and generates html code for movie thumbnail to be used in template
+        :return: movie_thumbnail_html str
+        """
+        movies: list = self.list_movies()
+        movie_thumbnail_html: str = ''
+        for movie in movies:
+            imdb_url: str = IMDB + movie["imdbID"]
+            if 'United States' in movie["country"]:
+                country: str = 'United States of America'
+            elif ',' in movie["country"]:
+                country: str = movie["country"][: movie["country"].index(',')]
+            else:
+                country: str = movie["country"]
+            country_data_url: str = COUNTRY_API + country
+            country_raw_data = requests.get(country_data_url)
+            country_data: list = country_raw_data.json()
+            country_code: str = country_data[0]["cca2"]
+            flag_api_call: str = f'{FLAG_API}{country_code}/shiny/24.png'
+            movie_tile_template: list = \
+                ['<li>\n', '<div class = "movie">\n',
+                 f'<div class="parent">\n',
+                 f'<a href="{imdb_url}" target="blank">'
+                 f'<img class = "movie-poster" '
+                 f'src = "{movie["poster"]}" '
+                 f'alt = "{movie["title"]} poster image"'
+                 f' title = "{movie["note"]}"></a>\n',
+                 f'<img class="flag" '
+                 f'src="{flag_api_call}">\n',
+                 f'</div>\n',
+                 f'<div class = "score"> IMDB Rate: '
+                 f'{movie["rating"]}</div>\n',
+                 f'<div class = "movie-title">'
+                 f'{movie["title"]}</div>\n',
+                 f'<div class = "movie-year">'
+                 f'{movie["year"]}</div>\n', '</div>\n',
+                 f'</li>\n']
+
+            for item in movie_tile_template:
+                movie_thumbnail_html += item
+        return movie_thumbnail_html
+
+    # This function generate a html webpage
+    def generate_website(self):
+        """
+        This function calls the function movie_thumbnail and include the movies
+        ' html code in a template on a new webpage which is  named build.html
+        :return: None
+        """
+        template_movie_grid = self.movie_thumbnail()
+        with open("./_static/index_template.html", "r") as handler:
+            template_str: str = handler.read()
+            output_str: str = template_str.replace('__TEMPLATE_MOVIE_GRID__',
+                                                   f'{template_movie_grid}')
+        with open("build.html", "w") as file_output:
+            file_output.write(output_str)
+        print('Website was generated successfully.')

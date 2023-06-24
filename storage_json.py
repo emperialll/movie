@@ -264,23 +264,24 @@ class StorageJson(IStorage):
             country_data: list = country_raw_data.json()
             country_code: str = country_data[0]["cca2"]
             flag_api_call: str = f'{FLAG_API}{country_code}/shiny/24.png'
-            movie_tile_template: list = ['<li>\n', '<div class = "movie">\n',
-                                       f'<div class="parent">\n',
-                                       f'<a href="{imdb_url}" target="blank">'
-                                       f'<img class = "movie-poster" '
-                                       f'src = "{movie["poster"]}" '
-                                       f'alt = "{movie["title"]} poster image"'
-                                       f' title = "{movie["note"]}"></a>\n',
-                                       f'<img class="flag" '
-                                       f'src="{flag_api_call}">\n',
-                                       f'</div>\n',
-                                       f'<div class = "score"> IMDB Rate: '
-                                       f'{movie["rating"]}</div>\n',
-                                       f'<div class = "movie-title">'
-                                       f'{movie["title"]}</div>\n',
-                                       f'<div class = "movie-year">'
-                                       f'{movie["year"]}</div>\n', '</div>\n',
-                                       f'</li>\n']
+            movie_tile_template: list = \
+                ['<li>\n', '<div class = "movie">\n',
+                 f'<div class="parent">\n',
+                 f'<a href="{imdb_url}" target="blank">'
+                 f'<img class = "movie-poster" '
+                 f'src = "{movie["poster"]}" '
+                 f'alt = "{movie["title"]} poster image"'
+                 f' title = "{movie["note"]}"></a>\n',
+                 f'<img class="flag" '
+                 f'src="{flag_api_call}">\n',
+                 f'</div>\n',
+                 f'<div class = "score"> IMDB Rate: '
+                 f'{movie["rating"]}</div>\n',
+                 f'<div class = "movie-title">'
+                 f'{movie["title"]}</div>\n',
+                 f'<div class = "movie-year">'
+                 f'{movie["year"]}</div>\n', '</div>\n',
+                 f'</li>\n']
 
             for item in movie_tile_template:
                 movie_thumbnail_html += item
@@ -293,7 +294,7 @@ class StorageJson(IStorage):
         ' html code in a template on a new webpage which is  named build.html
         :return: None
         """
-        template_movie_grid= self.movie_thumbnail()
+        template_movie_grid = self.movie_thumbnail()
         with open("./_static/index_template.html", "r") as handler:
             template_str: str = handler.read()
             output_str: str = template_str.replace('__TEMPLATE_MOVIE_GRID__',
