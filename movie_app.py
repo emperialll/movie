@@ -20,7 +20,8 @@ class MovieApp:
     def _command_list_movies(self):
         movies = self._storage.list_movies()
         for movie in movies:
-            print(f'{movie["title"]}, Rating: {movie["rating"]}, Released: {movie["year"]}')
+            print(f'{movie["title"]}, Rating: {movie["rating"]}, '
+                  f'Released: {movie["year"]}')
 
     def _command_add_movies(self, title):
         self._storage.add_movie(title)
@@ -72,6 +73,9 @@ class MovieApp:
                     title = input('Enter the movie title:\n')
                     note = input('Enter the movie note:\n')
                     self._command_update_movies(title, note)
+                elif user_choice == 5:
+                    self._command_movie_stats()
+
                 elif user_choice == 6:
                     self._command_movie_random()
                 elif user_choice == 7:

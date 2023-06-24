@@ -37,7 +37,11 @@ class StorageCsv(IStorage):
         """
         movies = []
         if not os.path.exists(self.file_path):
-            return movies
+            with open(self.file_path, 'w', newline='') as handler:
+                writer = csv.writer(handler)
+                writer.writerow(["Title", "Rating", "Year"])  # Write headers
+                return movies
+
         with open(self.file_path, 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:

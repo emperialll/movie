@@ -3,6 +3,7 @@ import requests
 import json
 import statistics
 import random
+import os
 
 
 # OMDB API to get movie data
@@ -37,6 +38,11 @@ class StorageJson(IStorage):
             },
         }
         """
+        if not os.path.exists(self.file_path):
+            # Create the file if it doesn't exist
+            with open(self.file_path, 'w') as handler:
+                handler.write(json.dumps([]))  # Write an empty dictionary
+
         with open(self.file_path, 'r') as handler:
             movies_data = handler.read()
             movies = json.loads(movies_data)
@@ -87,7 +93,7 @@ class StorageJson(IStorage):
         if len(target_movies_for_deletion) == 1:  # If only one movie found
             movies.remove(target_movies_for_deletion[0])
             json_object = json.dumps(movies, indent=4)  # Serializing json
-            with open("movies.json", "w") as outfile:  # Writing to movie.json
+            with open(self.file_path, "w") as outfile:  # Writing to movie.json
                 outfile.write(json_object)
             print(f'\nThe movie "{target_movies_for_deletion[0]["title"]}" '
                   f'has been removed from movie list successfully.')
