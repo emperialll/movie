@@ -1,3 +1,4 @@
+import json
 import csv
 import requests
 import statistics
@@ -217,7 +218,7 @@ class StorageCsv(IStorage):
         """
         Prints statistical data of the movies in the movie list.
 
-        The statistical data includes the best movie, worst movie,
+        The statistical data includes the best movie, worse movie,
         average rating, and median rating.
 
         Raises:
@@ -254,7 +255,8 @@ class StorageCsv(IStorage):
                 print(f'The worst movies are: {", ".join(worst_movie)}.')
         except ValueError as e:
             print(
-                f"An error occurred while calculating the statistics: {str(e)}")
+                f"An error occurred while calculating the "
+                f"statistics: {str(e)}")
             raise
 
     def random_movie(self) -> None:
@@ -369,10 +371,11 @@ class StorageCsv(IStorage):
                 for item in movie_tile_template:
                     movie_thumbnail_html += item
             return movie_thumbnail_html
-        except (
-        requests.exceptions.RequestException, json.JSONDecodeError) as e:
+        except (requests.exceptions.RequestException,
+                json.JSONDecodeError) as e:
             print(
-                f"An error occurred while generating movie thumbnails: {str(e)}")
+                f"An error occurred while generating movie "
+                f"thumbnails: {str(e)}")
             raise
 
     def generate_website(self):

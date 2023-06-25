@@ -7,9 +7,14 @@ import argparse
 # The main function which is being executed upon running the program
 def main() -> None:
     """
-    This function constantly shows the movie menu and asking user to choose
-    his/her preferred function and thereafter calls the respective function
-    :return: None
+    This function runs the Movie App, which provides a menu to interact with
+    a movie database. It prompts the user to choose functions for managing
+    movies and performs the corresponding actions.
+
+    Command-line arguments:
+    file_path (str): Path to the storage file (JSON or CSV)
+
+    Returns: None
     """
     # Create an instance of ArgumentParser
     parser = argparse.ArgumentParser(description='Movie App')
