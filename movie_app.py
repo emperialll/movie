@@ -49,16 +49,40 @@ class MovieApp:
 
     def run(self):
         """
-        This function constantly shows the movie menu and asking user to choose
-        his/her preferred function and thereafter calls the respective function
-        :return: None
+        Runs the MovieApp program, displaying the movie menu and executing
+        user-selected commands.
+
+        The function repeatedly displays the movie menu and prompts the user
+        to enter a choice (0-9). Based on the user's input, the corresponding
+        command is executed to perform the desired operation.
+        The program continues running until the user chooses to exit by
+        entering '0'.
+
+        Menu Options:
+        0: Exit
+        1: List movies
+        2: Add movie
+        3: Delete movie
+        4: Update movie
+        5: Stats
+        6: Random movie
+        7: Search movie
+        8: Movies sorted by rating
+        9: Generate website
+
+        Raises:
+            ValueError: If the user enters a non-integer choice.
+
+        Returns:
+            None
         """
         while True:
             print('\n********** My Movies Database **********\n\nMenu:')
             for key, val in MENU.items():
                 print(f'{key}. {val}')
-            user_choice = int(input('\nEnter your choice (0-9):\n'))
+            user_choice = input('\nEnter your choice (0-9):\n')
             try:
+                user_choice = int(user_choice)
                 if user_choice == 0:
                     break
                 elif user_choice == 1:
